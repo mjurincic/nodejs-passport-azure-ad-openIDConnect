@@ -27,30 +27,30 @@
  * Module dependencies.
  *****************************************************************************/
 
-var express = require('express');
-var cookieParser = require('cookie-parser');
-var expressSession = require('express-session');
-var bodyParser = require('body-parser');
-var methodOverride = require('method-override');
-var passport = require('passport');
-var util = require('util');
-var bunyan = require('bunyan');
-var config = require('./config');
+const express = require('express');
+const cookieParser = require('cookie-parser');
+const expressSession = require('express-session');
+const bodyParser = require('body-parser');
+const methodOverride = require('method-override');
+const passport = require('passport');
+const util = require('util');
+const bunyan = require('bunyan');
+const config = require('./config');
 
 // set up database for express session
-var MongoStore = require('connect-mongo')(expressSession);
-var mongoose = require('mongoose');
+const MongoStore = require('connect-mongo')(expressSession);
+const mongoose = require('mongoose');
 
 // Start QuickStart here
 
-var OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
+const OIDCStrategy = require('passport-azure-ad').OIDCStrategy;
 
-var log = bunyan.createLogger({
+const log = bunyan.createLogger({
     name: 'Microsoft OIDC Example Web Application'
 });
 
 /******************************************************************************
- * Set up passport in the app 
+ * Set up passport in the app
  ******************************************************************************/
 
 //-----------------------------------------------------------------------------
@@ -70,11 +70,11 @@ passport.deserializeUser(function(oid, done) {
 });
 
 // array to hold logged in users
-var users = [];
+const users = [];
 
-var findByOid = function(oid, fn) {
-  for (var i = 0, len = users.length; i < len; i++) {
-    var user = users[i];
+const findByOid = function(oid, fn) {
+  for (let i = 0, len = users.length; i < len; i++) {
+    const user = users[i];
    log.info('we are using user: ', user);
     if (user.oid === oid) {
       return fn(null, user);
@@ -85,11 +85,11 @@ var findByOid = function(oid, fn) {
 
 //-----------------------------------------------------------------------------
 // Use the OIDCStrategy within Passport.
-// 
+//
 // Strategies in passport require a `verify` function, which accepts credentials
 // (in this case, the `oid` claim in id_token), and invoke a callback to find
 // the corresponding user object.
-// 
+//
 // The following are the accepted prototypes for the `verify` function
 // (1) function(iss, sub, done)
 // (2) function(iss, sub, profile, done)
@@ -145,7 +145,7 @@ passport.use(new OIDCStrategy({
 //-----------------------------------------------------------------------------
 // Config the app, include middlewares
 //-----------------------------------------------------------------------------
-var app = express();
+const app = express();
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
@@ -180,11 +180,11 @@ app.use(express.static(__dirname + '/../../public'));
 //-----------------------------------------------------------------------------
 // Set up the route controller
 //
-// 1. For 'login' route and 'returnURL' route, use `passport.authenticate`. 
+// 1. For 'login' route and 'returnURL' route, use `passport.authenticate`.
 // This way the passport middleware can redirect the user to login page, receive
 // id_token etc from returnURL.
 //
-// 2. For the routes you want to check if user is already logged in, use 
+// 2. For the routes you want to check if user is already logged in, use
 // `ensureAuthenticated`. It checks if there is an user stored in session, if not
 // it will call `passport.authenticate` to ask for user to log in.
 //-----------------------------------------------------------------------------
@@ -204,12 +204,12 @@ app.get('/account', ensureAuthenticated, function(req, res) {
 
 app.get('/login',
   function(req, res, next) {
-    passport.authenticate('azuread-openidconnect', 
-      { 
+    passport.authenticate('azuread-openidconnect',
+      {
         response: res,                      // required
         resourceURL: config.resourceURL,    // optional. Provide a value if you want to specify the resource.
         customState: 'my_state',            // optional. Provide a value if you want to provide custom state value.
-        failureRedirect: '/' 
+        failureRedirect: '/'
       }
     )(req, res, next);
   },
@@ -224,10 +224,10 @@ app.get('/login',
 // redirected to '/' (home page); otherwise, it passes to the next middleware.
 app.get('/auth/openid/return',
   function(req, res, next) {
-    passport.authenticate('azuread-openidconnect', 
-      { 
+    passport.authenticate('azuread-openidconnect',
+      {
         response: res,                      // required
-        failureRedirect: '/'  
+        failureRedirect: '/'
       }
     )(req, res, next);
   },
@@ -242,10 +242,10 @@ app.get('/auth/openid/return',
 // redirected to '/' (home page); otherwise, it passes to the next middleware.
 app.post('/auth/openid/return',
   function(req, res, next) {
-    passport.authenticate('azuread-openidconnect', 
-      { 
+    passport.authenticate('azuread-openidconnect',
+      {
         response: res,                      // required
-        failureRedirect: '/'  
+        failureRedirect: '/'
       }
     )(req, res, next);
   },
@@ -262,5 +262,5 @@ app.get('/logout', function(req, res){
   });
 });
 
-app.listen(3000);
-
+const { PORT = 3000 } = process.env;
+app.listen(PORT, () => console.log(`Listening on port ${PORT}`)); // eslint-disable-line no-console
