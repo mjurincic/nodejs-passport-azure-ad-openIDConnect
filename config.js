@@ -8,6 +8,7 @@ const envVarsSchema = joi
       .string()
       .valid(['development', 'production', 'test', 'provision'])
       .required(),
+    HOST: joi.string().hostname(),
     PORT: joi.number().required(),
     LOGGER_LEVEL: joi
       .string()
@@ -48,11 +49,11 @@ module.exports = {
     // 'https://login.microsoftonline.com/common/.well-known/openid-configuration'
     // To use the common endpoint, you have to either set `validateIssuer` to false, or provide the `issuer` value.
     identityMetadata: `https://login.microsoftonline.com/${
-      process.env.AZURE_AD_TENANT_GUID
+      envVars.AZURE_AD_TENANT_GUID
     }/.well-known/openid-configuration`,
 
     // Required, the client ID of your app in AAD
-    clientID: process.env.AZURE_AD_CLIENT_ID,
+    clientID: envVars.AZURE_AD_CLIENT_ID,
 
     // Required, must be 'code', 'code id_token', 'id_token code' or 'id_token'
     responseType: 'code id_token',
@@ -61,14 +62,14 @@ module.exports = {
     responseMode: 'form_post',
 
     // Required, the reply URL registered in AAD for your app
-    redirectUrl: 'http://localhost:3000/auth/openid/return',
+    redirectUrl: `http://${envVars.HOST}:${envVars.PORT}/auth/openid/return`,
 
     // Required if we use http for redirectUrl
     allowHttpForRedirectUrl: true,
 
     // Required if `responseType` is 'code', 'id_token code' or 'code id_token'.
     // If app key contains '\', replace it with '\\'.
-    clientSecret: process.env.AZURE_AD_CLIENT_SECRET,
+    clientSecret: envVars.AZURE_AD_CLIENT_SECRET,
 
     // Required to set to false if you don't want to validate issuer
     validateIssuer: true,
@@ -97,7 +98,7 @@ module.exports = {
     ],
 
     // Optional. The additional scope you want besides 'openid', for example: ['email', 'profile'].
-    scope: null,
+    scope: ['email', 'profile'],
 
     // Optional, 'error', 'warn' or 'info'
     loggingLevel: 'info',
@@ -114,8 +115,9 @@ module.exports = {
 
   resourceURL: 'https://graph.windows.net',
   // The url you need to go to destroy the session with AAD
-  destroySessionUrl:
-    'https://login.microsoftonline.com/common/oauth2/logout?post_logout_redirect_uri=http://localhost:3000',
+  destroySessionUrl: `https://login.microsoftonline.com/common/oauth2/logout?post_logout_redirect_uri=http://${
+    envVars.HOST
+  }:${envVars.PORT}`,
   // If you want to use the mongoDB session store for session middleware; otherwise we will use the default
   // session store provided by express-session.
   // Note that the default session store is designed for development purpose only.
