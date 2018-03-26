@@ -13,27 +13,29 @@
     "connect-mongo": "2.0.1",
     "cookie-parser": "1.4.3",
     "dotenv": "5.0.1",
-    "ejs": "2.5.7",
+    "ejs": "2.5.8",
     "express": "4.16.3",
     "express-session": "1.15.6",
     "joi": "13.1.2",
     "method-override": "2.3.10",
-    "mongoose": "5.0.10",
+    "mongoose": "5.0.11",
     "passport": "0.4.0",
     "passport-azure-ad": "3.0.12"
   },
   "devDependencies": {
-    "prettier": "1.11.1",
-    "eslint": "4.18.2",
-    "eslint-plugin-jest": "21.14.0",
+    "eslint": "4.19.1",
     "eslint-config-prettier": "2.9.0",
+    "eslint-plugin-jest": "21.15.0",
     "eslint-plugin-prettier": "2.6.0",
-    "jest": "22.4.2"
+    "jest": "22.4.3",
+    "npm-check-updates": "2.14.1",
+    "prettier": "1.11.1"
   },
   "scripts": {
     "start": "node app.js",
     "debug": " node app.js | bunyan",
     "test": "jest",
+    "update-packages": "npm-check-updates -u  && npm update",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
